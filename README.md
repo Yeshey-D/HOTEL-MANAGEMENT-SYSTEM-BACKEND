@@ -1,10 +1,10 @@
 # HOTEL-MANAGEMENT-SYSTEM
 
-##Overview
-##This is a Hotel Management System Application
+## Overview
+_This is a Hotel Management System Application_
 
-##Technologies
- -Java
- -Spring Boot frameworks
+## Technologies:
+ - Java
+ - Spring Boot
+ 
 
-##HOTEL MANAGEMENT SYSTEM
