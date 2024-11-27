@@ -17,6 +17,18 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable Long id) throws Exception {
+        return userService.findById(id);
+    }
+
+    @GetMapping
+    public List<User> getAllUsers() {
+        return userService.findAll();
+
+    }
+
     @PostMapping
     public User saveUser(@Validated @RequestBody User user) {
         return userService.save(user);
