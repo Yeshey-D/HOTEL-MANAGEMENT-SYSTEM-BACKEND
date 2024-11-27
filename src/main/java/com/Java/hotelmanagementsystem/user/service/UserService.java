@@ -37,9 +37,18 @@ public class UserService implements IUserService {
 
     @Override
     public String update(@NonNull User user) {
-        //TODO: Validate for update
-        userRepository.save(user);
-        return UserConstants.UPDATE_SUCCESSFUL;
+        long id = user.getId();
+
+        return userRepository.findById(id).map(user1 -> {
+            user1.setName(user.getName());
+            user1.setEmail(user.getEmail());
+            user1.setCid(user.getCid());
+            user1.setPhone(user.getPhone());
+            user1.setPassword(user.getPassword());
+            userRepository.save(user1);
+            return UserConstants.UPDATE_SUCCESSFUL;
+        })
+                .orElse(UserConstants.NOT_FOUND);
     }
 
     @Override
