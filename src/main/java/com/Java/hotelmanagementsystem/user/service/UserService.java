@@ -57,4 +57,5 @@ public class UserService implements IUserService {
         userRepository.deleteById(id);
         return UserConstants.DELETE_SUCCESSFUL;
     }
+
 }
