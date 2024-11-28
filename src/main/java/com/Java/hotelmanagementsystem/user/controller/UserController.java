@@ -4,6 +4,9 @@ import com.Java.hotelmanagementsystem.constants.UserConstants;
 import com.Java.hotelmanagementsystem.user.model.User;
 import com.Java.hotelmanagementsystem.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +35,21 @@ public class UserController {
     @PostMapping
     public User saveUser(@Validated @RequestBody User user) {
         return userService.save(user);
+    }
+
+    @PutMapping("put/{id}")
+    public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody User user) {
+        // Set the ID in the User object (to ensure the correct record is updated)
+        user.setId(id);
+
+        // Call the update method in the service layer
+        String response = userService.update(user);
+
+        if (UserConstants.UPDATE_SUCCESSFUL.equals(response)) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
     }
 
 }
