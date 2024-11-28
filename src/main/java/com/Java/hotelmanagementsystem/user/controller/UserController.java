@@ -37,6 +37,7 @@ public class UserController {
         return userService.save(user);
     }
 
+
     @PutMapping("put/{id}")
     public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody User user) {
         // Set the ID in the User object (to ensure the correct record is updated)
@@ -50,6 +51,13 @@ public class UserController {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
+    }
+
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+        userService.deleteById(id);
+        return ResponseEntity.ok(UserConstants.DELETE_SUCCESSFUL);
     }
 
 }
