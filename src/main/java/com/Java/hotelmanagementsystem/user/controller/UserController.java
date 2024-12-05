@@ -36,6 +36,19 @@ public class UserController {
         return RestHelper.responseSuccess(listHashMap);
     }
 
+    /**
+     * Fetches the instructor by identifier.
+     *
+     * @param id The unique identifier of the instructor.
+     * @return The instructor entity.
+     */
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<RestResponse> findById(@PathVariable long id) {
+        HashMap<String, Object> listHashMap = new HashMap<>();
+        listHashMap.put("user", userService.findById(id));
+        return RestHelper.responseSuccess(listHashMap);
+    }
 
     /**
      * Signing up the new instructor.
