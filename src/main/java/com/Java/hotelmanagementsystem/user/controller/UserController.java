@@ -1,5 +1,4 @@
 package com.Java.hotelmanagementsystem.user.controller;
-
 import com.Java.hotelmanagementsystem.util.RestHelper;
 import com.Java.hotelmanagementsystem.util.RestResponse;
 import com.Java.hotelmanagementsystem.util.constants.UserConstants;
@@ -48,5 +47,12 @@ public class UserController {
         HashMap<String, Object> listHashMap = new HashMap<>();
         listHashMap.put("user", userService.save(user));
         return RestHelper.responseSuccess(listHashMap);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<RestResponse> delete(@PathVariable long id) {
+        String message = userService.deleteById(id);
+        return RestHelper.responseMessage(message);
     }
 }
