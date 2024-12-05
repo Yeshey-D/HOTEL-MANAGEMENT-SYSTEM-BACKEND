@@ -51,6 +51,18 @@ public class UserService implements IUserService {
         return UserMapper.toDTO(savedUser);
     }
 
+    public UserDTO fetchSelfInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = ((UserInfoDetails) authentication.getPrincipal()).getUsername();
+        return  findByEmail(email).orElseThrow(
+                () -> new GlobalExceptionWrapper.NotFoundException(String.format(NOT_FOUND_MESSAGE, USER.toLowerCase())));
+    }
+
+    public Optional<UserDTO> findByEmail(@lombok.NonNull String emailId) {
+        Optional<User> user = this.userRepository.findByEmail(emailId);
+        return UserMapper.toDTO(user);
+    }
+
     @Override
     public UserDTO findById(long id) throws Exception {
         return null;
@@ -67,8 +79,5 @@ public class UserService implements IUserService {
     }
 
 
-    @Override
-    public UserDTO fetchSelfInfo() {
-        return null;
-    }
+
 }
