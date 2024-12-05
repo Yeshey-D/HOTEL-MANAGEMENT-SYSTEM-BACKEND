@@ -55,4 +55,16 @@ public class UserController {
         String message = userService.deleteById(id);
         return RestHelper.responseMessage(message);
     }
+    /**
+     * Fetches all the instructor entities in the system.
+     *
+     * @return The list of instructor entities.
+     */
+    @GetMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<RestResponse> findAll() {
+        HashMap<String, Object> listHashMap = new HashMap<>();
+        listHashMap.put("users", userService.findAll());
+        return RestHelper.responseSuccess(listHashMap);
+    }
 }
