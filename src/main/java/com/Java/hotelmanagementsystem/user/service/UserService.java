@@ -34,7 +34,8 @@ public class UserService implements IUserService {
 
     @Override
     public List<UserDTO> findAll() {
-        return List.of();
+        List<User> user = this.userRepository.findAll();
+        return UserMapper.toDTO(user);
     }
 
     @Override
@@ -52,11 +53,10 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserDTO findById(long id) {
-        User user = this.userRepository.findById(id).orElseThrow(
-                () -> new GlobalExceptionWrapper.NotFoundException(String.format(NOT_FOUND_MESSAGE, USER.toLowerCase())));
-        return UserMapper.toDTO(user);
+    public UserDTO findById(long id) throws Exception {
+        return null;
     }
+
 
     public UserDTO fetchSelfInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
