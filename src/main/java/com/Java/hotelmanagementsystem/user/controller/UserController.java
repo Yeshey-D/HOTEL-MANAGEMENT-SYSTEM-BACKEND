@@ -23,14 +23,30 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    /**
+     * Fetch self info of the instructor
+     *
+     * @return The details of the authenticated user.
+     */
+    @GetMapping("/self")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<RestResponse> fetchSelfInfo() {
+        HashMap<String, Object> listHashMap = new HashMap<>();
+        listHashMap.put("user", userService.fetchSelfInfo());
+        return RestHelper.responseSuccess(listHashMap);
+    }
 
+
+    /**
+     * Signing up the new instructor.
+     *
+     * @param user The entity to be saved.
+     * @return The saved entity.
+     */
     @PostMapping
     public ResponseEntity<RestResponse> save(@Validated @RequestBody User user) {
         HashMap<String, Object> listHashMap = new HashMap<>();
         listHashMap.put("user", userService.save(user));
         return RestHelper.responseSuccess(listHashMap);
     }
-
-
-
 }
