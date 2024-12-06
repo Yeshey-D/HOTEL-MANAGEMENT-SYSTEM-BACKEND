@@ -71,6 +71,13 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public UserDTO findById(long id) {
+        User user = this.userRepository.findById(id).orElseThrow(
+                () -> new GlobalExceptionWrapper.NotFoundException(String.format(NOT_FOUND_MESSAGE, USER.toLowerCase())));
+        return UserMapper.toDTO(user);
+    }
+  
+    @Override
     public String update(long id, User entity) {
         return "";
     }
@@ -89,6 +96,4 @@ public class UserService implements IUserService {
         this.userRepository.deleteById(userEntity.getId());
         return String.format(DELETED_SUCCESSFULLY_MESSAGE, USER);
     }
-
-
 }
