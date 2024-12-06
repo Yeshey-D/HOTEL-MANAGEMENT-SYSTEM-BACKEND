@@ -34,7 +34,8 @@ public class UserService implements IUserService {
 
     @Override
     public List<UserDTO> findAll() {
-        return List.of();
+        List<User> user = this.userRepository.findAll();
+        return UserMapper.toDTO(user);
     }
 
     @Override
@@ -50,6 +51,12 @@ public class UserService implements IUserService {
 
         return UserMapper.toDTO(savedUser);
     }
+
+    @Override
+    public UserDTO findById(long id) throws Exception {
+        return null;
+    }
+
 
     public UserDTO fetchSelfInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -69,14 +76,24 @@ public class UserService implements IUserService {
                 () -> new GlobalExceptionWrapper.NotFoundException(String.format(NOT_FOUND_MESSAGE, USER.toLowerCase())));
         return UserMapper.toDTO(user);
     }
+  
     @Override
     public String update(long id, User entity) {
         return "";
     }
 
     @Override
+    @Transactional
     public String deleteById(long id) {
-        return "";
-    }
+        UserDTO authenticatedUser = fetchSelfInfo();
+        User userEntity = UserMapper.toEntity(authenticatedUser);
 
+        //Allow to delete by admin to the instructor info.
+        if(Arrays.stream(authenticatedUser.getRoles().split(",")).anyMatch(role -> role.trim().equalsIgnoreCase("ADMIN"))){
+            userEntity = UserMapper.toEntity(findById(id));
+        }
+
+        this.userRepository.deleteById(userEntity.getId());
+        return String.format(DELETED_SUCCESSFULLY_MESSAGE, USER);
+    }
 }
