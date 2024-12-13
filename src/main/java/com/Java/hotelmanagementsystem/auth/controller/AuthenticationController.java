@@ -1,5 +1,4 @@
 package com.Java.hotelmanagementsystem.auth.controller;
-
 import com.Java.hotelmanagementsystem.auth.model.AuthRequest;
 import com.Java.hotelmanagementsystem.auth.service.AuthenticationService;
 import com.Java.hotelmanagementsystem.user.model.User;
@@ -17,6 +16,7 @@ import java.util.HashMap;
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
+
     @Autowired
     private AuthenticationService loginService;
 
