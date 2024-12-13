@@ -32,7 +32,6 @@ public class UserService implements IUserService {
     @Autowired
     private UserRepository userRepository;
 
-
     @Override
     public List<UserDTO> findAll() {
         List<User> user = this.userRepository.findAll();

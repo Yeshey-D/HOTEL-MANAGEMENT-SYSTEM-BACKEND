@@ -1,4 +1,5 @@
 package com.Java.hotelmanagementsystem.user.controller;
+import com.Java.hotelmanagementsystem.user.model.UserDTO;
 import com.Java.hotelmanagementsystem.util.RestHelper;
 import com.Java.hotelmanagementsystem.util.RestResponse;
 import com.Java.hotelmanagementsystem.util.constants.UserConstants;
@@ -28,8 +29,8 @@ public class UserController {
      * @return The details of the authenticated user.
      */
     @GetMapping("/self")
-    @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<RestResponse> fetchSelfInfo() {
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
+    public ResponseEntity<RestResponse> fetchSelf() {
         HashMap<String, Object> listHashMap = new HashMap<>();
         listHashMap.put("user", userService.fetchSelfInfo());
         return RestHelper.responseSuccess(listHashMap);
@@ -45,7 +46,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<RestResponse> findById(@PathVariable long id) {
         HashMap<String, Object> listHashMap = new HashMap<>();
-        listHashMap.put("user", userService.findById(id));
+        listHashMap.put("user", userService.fetchById(id));
         return RestHelper.responseSuccess(listHashMap);
     }
 
@@ -68,6 +69,7 @@ public class UserController {
         String message = userService.deleteById(id);
         return RestHelper.responseMessage(message);
     }
+
     /**
      * Fetches all the instructor entities in the system.
      *
@@ -79,5 +81,19 @@ public class UserController {
         HashMap<String, Object> listHashMap = new HashMap<>();
         listHashMap.put("users", userService.findAll());
         return RestHelper.responseSuccess(listHashMap);
+    }
+
+    /**
+     * Updates the existing user entity.
+     *
+     * @param userDTO The updated user dto.
+     * @return The message indicating the confirmation on updated user entity.
+     */
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
+    public ResponseEntity<RestResponse> update(@PathVariable long id,
+                                               @Validated @RequestBody UserDTO userDTO) {
+        String message = userService.update(id, userDTO);
+        return RestHelper.responseMessage(message);
     }
 }
