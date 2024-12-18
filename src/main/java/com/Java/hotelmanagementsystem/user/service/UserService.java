@@ -4,7 +4,6 @@ package com.Java.hotelmanagementsystem.user.service;
 import com.Java.hotelmanagementsystem.auth.helper.UserInfoDetails;
 import com.Java.hotelmanagementsystem.user.mapper.UserMapper;
 import com.Java.hotelmanagementsystem.user.model.UserDTO;
-import com.Java.hotelmanagementsystem.util.constants.UserConstants;
 import com.Java.hotelmanagementsystem.user.model.User;
 import com.Java.hotelmanagementsystem.user.repository.UserRepository;
 import com.Java.hotelmanagementsystem.util.exception.GlobalExceptionWrapper;
@@ -52,7 +51,6 @@ public class UserService implements IUserService {
         return UserMapper.toDTO(savedUser);
     }
 
-
     @Override
     public UserDTO fetchById(long id) {
         User user = findById(id);
@@ -66,12 +64,13 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User fetchSelfInfo() {
+    public UserDTO fetchSelfInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = ((UserInfoDetails) authentication.getPrincipal()).getUsername();
-        return findByEmail(email).orElseThrow(
+        User selectedUser = findByEmail(email).orElseThrow(
                 () -> new GlobalExceptionWrapper.NotFoundException(String.format(NOT_FOUND_MESSAGE,
                         USER.toLowerCase())));
+        return UserMapper.toDTO(selectedUser);
     }
 
     public Optional<User> findByEmail(@NonNull String emailId) {
@@ -80,12 +79,12 @@ public class UserService implements IUserService {
 
     @Override
     public String update(long id, @NonNull UserDTO userDTO) {
-        User authenticatedUser = fetchSelfInfo();
+        UserDTO authenticatedUser = fetchSelfInfo();
 
         //Allow update by admin to the user info.
         if (Arrays.stream(authenticatedUser.getRoles().split(",")).anyMatch(role -> role.trim().equalsIgnoreCase(
                 "ADMIN"))) {
-            authenticatedUser = findById(id);
+            authenticatedUser = UserMapper.toDTO(findById(id));
         }
 
         if (StringUtils.isNotBlank(userDTO.getCid())) {
@@ -100,19 +99,19 @@ public class UserService implements IUserService {
             authenticatedUser.setPhone(userDTO.getPhone());
         }
 
-        this.userRepository.save(authenticatedUser);
+        this.userRepository.save(UserMapper.toEntity(authenticatedUser));
         return String.format(UPDATED_SUCCESSFULLY_MESSAGE, USER);
     }
 
     @Override
     @Transactional
     public String deleteById(long id) {
-        User authenticatedUser = fetchSelfInfo();
+        UserDTO authenticatedUser = fetchSelfInfo();
 
         //Allow to delete by admin to the user info.
         if (Arrays.stream(authenticatedUser.getRoles().split(",")).anyMatch(role -> role.trim().equalsIgnoreCase(
                 "ADMIN"))) {
-            authenticatedUser = findById(id);
+            authenticatedUser = UserMapper.toDTO(findById(id));
         }
 
         this.userRepository.deleteById(authenticatedUser.getId());

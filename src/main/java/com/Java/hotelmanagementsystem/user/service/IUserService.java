@@ -10,5 +10,5 @@ public interface IUserService extends IGenericCrudService<User, UserDTO> {
      *
      * @return The instructor dto
      */
-    User fetchSelfInfo();
+    UserDTO fetchSelfInfo();
 }
