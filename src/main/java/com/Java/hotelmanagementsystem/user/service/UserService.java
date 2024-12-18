@@ -51,6 +51,7 @@ public class UserService implements IUserService {
         return UserMapper.toDTO(savedUser);
     }
 
+
     @Override
     public UserDTO fetchById(long id) {
         User user = findById(id);
@@ -112,6 +113,7 @@ public class UserService implements IUserService {
         if (Arrays.stream(authenticatedUser.getRoles().split(",")).anyMatch(role -> role.trim().equalsIgnoreCase(
                 "ADMIN"))) {
             authenticatedUser = UserMapper.toDTO(findById(id));
+
         }
 
         this.userRepository.deleteById(authenticatedUser.getId());

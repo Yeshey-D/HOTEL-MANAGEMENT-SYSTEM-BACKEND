@@ -34,6 +34,7 @@ public class AuthenticationService {
 
     @Autowired
     private PasswordEncoder encoder;
+
     /**
      * Authenticates the user provided credentials.
      *
@@ -55,6 +56,7 @@ public class AuthenticationService {
      * @return The map of access and refresh tokens.
      */
     public Map<String, String> refreshToken(String refreshToken) {
+       
         // Check if token is a refresh token
         if (!isRefreshToken(refreshToken)) {
             throw new GlobalExceptionWrapper.BadRequestException("Invalid Refresh Token.");
@@ -67,10 +69,12 @@ public class AuthenticationService {
         UserDetails userDetails = userInfoService.loadUserByUsername(username);
 
         if (jwtService.validateToken(refreshToken, userDetails)) {
+
             Map<String, String> tokens = generateTokens(username);
             //Omit refreshing of refresh tokens
             tokens.put("refreshToken", refreshToken);
             return tokens;
+
         } else {
             throw new GlobalExceptionWrapper.BadRequestException("Invalid or Expired Refresh Token.");
         }
@@ -87,6 +91,7 @@ public class AuthenticationService {
             Claims claims = jwtService.extractAllClaims(token);
             // Check for a custom claim or another identifier for refresh tokens
             return claims.containsKey("type") && "refresh".equals(claims.get("type"));
+
         } catch (Exception e) {
             return false;
         }
@@ -100,6 +105,7 @@ public class AuthenticationService {
      */
     private Map<String, String> generateTokens(String username) {
         Map<String, String> tokenMap = new HashMap<>();
+
         tokenMap.put("accessToken", jwtService.generateToken(username));
         tokenMap.put("refreshToken", jwtService.generateRefreshToken(username));
         return tokenMap;

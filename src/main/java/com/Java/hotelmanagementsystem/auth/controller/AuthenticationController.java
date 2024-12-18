@@ -1,5 +1,4 @@
 package com.Java.hotelmanagementsystem.auth.controller;
-
 import com.Java.hotelmanagementsystem.auth.model.AuthRequest;
 import com.Java.hotelmanagementsystem.auth.service.AuthenticationService;
 import com.Java.hotelmanagementsystem.user.model.User;
@@ -18,6 +17,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
+
     @Autowired
     private AuthenticationService loginService;
 
@@ -32,6 +32,7 @@ public class AuthenticationController {
      */
     @PostMapping("/login")
     public ResponseEntity<RestResponse> login(@RequestBody AuthRequest authRequest) {
+
         Map<String, Object> listHashMap = new HashMap<>(loginService.authenticate(authRequest));
         return RestHelper.responseSuccess(listHashMap);
     }
@@ -46,6 +47,7 @@ public class AuthenticationController {
     public ResponseEntity<RestResponse> refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         // Extract token from Bearer authorization header
         String refreshToken = authorizationHeader.substring(7); // Remove "Bearer "
+
         Map<String, Object> tokenMap = new HashMap<>(loginService.refreshToken(refreshToken));
         return RestHelper.responseSuccess(tokenMap);
     }
@@ -58,7 +60,9 @@ public class AuthenticationController {
      */
     @PostMapping("/sign-up")
     public ResponseEntity<RestResponse> save(@Validated @RequestBody User user) {
+
         Map<String, Object> listHashMap = new HashMap<>();
+
         listHashMap.put("user", userService.save(user));
         return RestHelper.responseSuccess(listHashMap);
     }
