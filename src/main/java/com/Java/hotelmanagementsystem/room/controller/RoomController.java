@@ -1,69 +1,58 @@
 package com.Java.hotelmanagementsystem.room.controller;
 
-import com.Java.hotelmanagementsystem.room.model.RoomDTO;
+import com.Java.hotelmanagementsystem.room.model.Room;
 import com.Java.hotelmanagementsystem.room.service.RoomService;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import com.Java.hotelmanagementsystem.util.constants.ExceptionConstants;
+import com.Java.hotelmanagementsystem.util.exception.GlobalExceptionWrapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/admin")
-@RequiredArgsConstructor
+@RequestMapping("/api/v1/rooms")
+@PreAuthorize("hasAuthority('ADMIN')")  // Ensures only admin can access these endpoints
 public class RoomController {
 
-    private final RoomService roomService;
+    @Autowired
+    private RoomService roomService;
 
-    //Adding room
-    @PostMapping("/room")
-    public ResponseEntity<?> postRoom(@RequestBody RoomDTO roomDTO) {
-        boolean success = roomService.postRoom(roomDTO);
-        if (success){
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    @PostMapping
+    public ResponseEntity<Room> createRoom(@Validated @RequestBody Room room) {
+        try {
+            Room savedRoom = roomService.save(room);
+            return ResponseEntity.ok(savedRoom);
+        } catch (AccessDeniedException e) {
+            throw new GlobalExceptionWrapper.UnauthorizedAccessException(ExceptionConstants.UNAUTHORIZED_OPERATION);
         }
     }
 
-    //fetching rooms
-    @GetMapping("/rooms/{pageNumber}")
-    public ResponseEntity<?> getAllRooms(@PathVariable int pageNumber) {
-        return ResponseEntity.ok(roomService.getAllRooms(pageNumber));
+    @GetMapping
+    public ResponseEntity<List<Room>> getAllRooms() {
+        List<Room> rooms = roomService.findAll();
+        return ResponseEntity.ok(rooms);
     }
 
-    //fetching room by id
-    @GetMapping("/room/{id}")
-    public ResponseEntity<?> getRoomById(@PathVariable Long id) {
-        try{
-            return ResponseEntity.ok(roomService.getRoomById(id));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong!");
-        }
+    @GetMapping("/{id}")
+    public ResponseEntity<Room> getTheatreById(@PathVariable long id) {
+        Room theatre = roomService.findById(id);
+        return ResponseEntity.ok(theatre);
     }
 
-    @PutMapping("/room/{id}")
-    public ResponseEntity<?> updateRoom(@PathVariable Long id, @RequestBody RoomDTO roomDTO) {
-        boolean success = roomService.updateRoom(id, roomDTO);
-
-        if (success) {
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    @PutMapping("/{id}")
+    public ResponseEntity<Room> updateRoom(@PathVariable Long id, @Validated @RequestBody Room roomDetails) {
+        Room updatedRoom = roomService.updateRoom(id, roomDetails);
+        return ResponseEntity.ok(updatedRoom);
     }
 
-    @DeleteMapping("/room/{id}")
-    public ResponseEntity<?> deleteRoom(@PathVariable Long id) {
-        try{
-            roomService.deleteRoom(id);
-
-            return ResponseEntity.ok(null);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteRoom(@PathVariable long id) {
+        String message = roomService.deleteById(id);
+        return ResponseEntity.ok(message);
     }
 
 }
