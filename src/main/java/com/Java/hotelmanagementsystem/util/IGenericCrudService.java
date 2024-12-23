@@ -45,4 +45,3 @@ public interface IGenericCrudService<T, E> {
      */
     String deleteById(long id);
 }
-

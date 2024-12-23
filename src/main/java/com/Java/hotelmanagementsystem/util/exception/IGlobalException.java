@@ -33,4 +33,3 @@ public interface IGlobalException {
         return restResponse;
     }
 }
-
