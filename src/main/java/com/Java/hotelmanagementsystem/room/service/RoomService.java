@@ -1,87 +1,72 @@
 package com.Java.hotelmanagementsystem.room.service;
 
 import com.Java.hotelmanagementsystem.room.model.Room;
-import com.Java.hotelmanagementsystem.room.model.RoomDTO;
-import com.Java.hotelmanagementsystem.room.model.RoomResponseDTO;
 import com.Java.hotelmanagementsystem.room.repository.RoomRepository;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import com.Java.hotelmanagementsystem.util.constants.ExceptionConstants;
+import com.Java.hotelmanagementsystem.util.exception.GlobalExceptionWrapper;
+import com.Java.hotelmanagementsystem.util.exception.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.lang.module.ResolutionException;
+import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class RoomService implements IRoomService {
 
-    private final RoomRepository roomRepository;
+    @Autowired
+    private RoomRepository roomRepository;
 
-    public boolean postRoom(RoomDTO roomDTO) {
-        try{
-            Room room = new Room();
+    @Override
+    public List<Room> findAll() {
+        // Fetch all theaters from the database
+        return roomRepository.findAll();
+    }
 
-            room.setName(roomDTO.getName());
-            room.setPrice(roomDTO.getPrice());
-            room.setType(roomDTO.getType());
-            room.setAvailable(true);
-
-            roomRepository.save(room);
-            return true;
-        } catch (Exception e){
-            return false;
+    @Override
+    public Room save(Room room) {
+        try {
+            return roomRepository.save(room);
+        } catch (DataIntegrityViolationException e) {
+            throw new GlobalExceptionWrapper.BadRequestException(ExceptionConstants.ROOM_NAME_EXISTS);
         }
     }
-
-    public RoomResponseDTO getAllRooms(int pageNumber) {
-        Pageable pageable = PageRequest.of(pageNumber, 6);
-        Page<Room> roomPage = roomRepository.findAll(pageable);
-
-        RoomResponseDTO roomResponseDTO = new RoomResponseDTO();
-
-        roomResponseDTO.setPageNumber(roomPage.getPageable().getPageNumber());
-        roomResponseDTO.setTotalPages(roomPage.getTotalPages());
-        roomResponseDTO.setRoomDTOList(roomPage.stream().map(Room::getRoomDto).collect(Collectors.toList()));
-
-        return roomResponseDTO;
+    @Override
+    public Room fetchById(long id) {
+        return findById(id);
     }
 
-    public RoomDTO getRoomById(Long id) {
-        Optional<Room> optionalRoom = roomRepository.findById(id);
-        if (optionalRoom.isPresent()){
-            return optionalRoom.get().getRoomDto();
-        } else {
-            throw new EntityNotFoundException("Room not found!");
-        }
+    @Override
+    public Room findById(long id) {
+        return roomRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Room not found with id: " + id));
     }
 
-    public boolean updateRoom(Long id, RoomDTO roomDTO) {
-        Optional<Room> optionalRoom = roomRepository.findById(id);
-
-        if (optionalRoom.isPresent()){
-            Room existingRoom = optionalRoom.get();
-
-            existingRoom.setName(roomDTO.getName());
-            existingRoom.setPrice(roomDTO.getPrice());
-            existingRoom.setType(roomDTO.getType());
-
-            roomRepository.save(existingRoom);
-            return true;
-        }
-        return false;
+    @Override
+    public String update(long id, Room room) {
+        Room existingTheatre = findById(id);
+        updateRoom(id, room);
+        return "Room updated successfully";
     }
 
-    public void deleteRoom(Long id) {
-
-        Optional<Room> optionalRoom = roomRepository.findById(id);
-
-        if (optionalRoom.isPresent()) {
-            roomRepository.deleteById(id);
-        } else {
-            throw new EntityNotFoundException("Room does not exist!");
-        }
+    @Override
+    public String deleteById(long id) {
+        Room room = findById(id);
+        roomRepository.delete(room);
+        return "Room deleted successfully";
     }
+
+    @Override
+    public Room updateRoom(Long id, Room roomDetails) {
+        Room existingTheatre = findById(id);
+
+        existingTheatre.setName(roomDetails.getName());
+        existingTheatre.setType(roomDetails.getType());
+        existingTheatre.setPrice(roomDetails.getPrice());
+        existingTheatre.setAvailable(roomDetails.isAvailable());
+
+        return roomRepository.save(existingTheatre);
+    }
+
 }
