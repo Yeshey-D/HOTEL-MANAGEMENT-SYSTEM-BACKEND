@@ -100,7 +100,12 @@ public class UserService implements IUserService {
             authenticatedUser.setPhone(userDTO.getPhone());
         }
 
-        this.userRepository.save(UserMapper.toEntity(authenticatedUser));
+
+        return updateEntity(UserMapper.toEntity(authenticatedUser));
+    }
+    @Override
+    public String updateEntity(User user) {
+        this.userRepository.save(user);
         return String.format(UPDATED_SUCCESSFULLY_MESSAGE, USER);
     }
 
