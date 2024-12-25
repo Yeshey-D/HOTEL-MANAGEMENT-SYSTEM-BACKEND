@@ -10,5 +10,14 @@ public interface IUserService extends IGenericCrudService<User, UserDTO> {
      *
      * @return The instructor dto
      */
-    User fetchSelfInfo();
+    UserDTO fetchSelfInfo();
+
+
+    /**
+     * Updates the user entity.
+     *
+     * @param user The user entity to be updated.
+     * @return The confirmation message on whether the user is updated or not.
+     */
+    String updateEntity(User user);
 }

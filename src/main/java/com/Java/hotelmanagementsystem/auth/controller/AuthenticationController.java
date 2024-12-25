@@ -1,6 +1,10 @@
 package com.Java.hotelmanagementsystem.auth.controller;
 import com.Java.hotelmanagementsystem.auth.model.AuthRequest;
 import com.Java.hotelmanagementsystem.auth.service.AuthenticationService;
+
+import com.Java.hotelmanagementsystem.email.dto.ForgotPasswordRequest;
+import com.Java.hotelmanagementsystem.email.dto.ResetPasswordRequest;
+import com.Java.hotelmanagementsystem.email.service.PasswordResetService;
 import com.Java.hotelmanagementsystem.user.model.User;
 import com.Java.hotelmanagementsystem.user.service.UserService;
 import com.Java.hotelmanagementsystem.util.RestHelper;
@@ -23,6 +27,10 @@ public class AuthenticationController {
 
     @Autowired
     private UserService userService;
+
+
+    @Autowired
+    private PasswordResetService passwordResetService;
 
     /**
      * Handles the authentication for the user provided credentials.
@@ -66,4 +74,31 @@ public class AuthenticationController {
         listHashMap.put("user", userService.save(user));
         return RestHelper.responseSuccess(listHashMap);
     }
+
+    /**
+     * Sends the password reset link to the concerned email.
+     *
+     * @param request The password request body containing the email of the user whose password is to be reset.
+     * @return The confirmation that the password reset link has been sent.
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<RestResponse> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        String message = passwordResetService.forgotPassword(request);
+        return RestHelper.responseMessage(message);
+    }
+
+    /**
+     * Resets the password from the provided token and the password.
+     *
+     * @param resetPasswordRequest The reset password request containing the jwt token and the password.
+     * @return The message indicating that the password has been reset successfully.
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<RestResponse> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
+        String message = passwordResetService.resetPassword(resetPasswordRequest);
+        return RestHelper.responseMessage(message);
+    }
+
+
+
 }
