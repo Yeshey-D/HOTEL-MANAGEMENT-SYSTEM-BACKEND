@@ -19,7 +19,6 @@ public class UserInfoService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> userDetail = userRepository.findByEmail(username); // Assuming 'email' is used as username
-
         // Converting UserInfo to UserDetails
         return userDetail.map(com.Java.hotelmanagementsystem.auth.helper.UserInfoDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));

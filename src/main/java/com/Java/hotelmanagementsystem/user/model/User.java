@@ -1,27 +1,22 @@
 package com.Java.hotelmanagementsystem.user.model;
 
-import com.Java.hotelmanagementsystem.util.AuditEntity;
+import com.Java.hotelmanagementsystem.reservation.model.Reservation;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 
+import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@DynamicInsert
-@DynamicUpdate
 @Table(name = "user")
-
-public class User extends AuditEntity {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USER_SEQUENCE")
@@ -42,4 +37,9 @@ public class User extends AuditEntity {
     private String password;
 
     private String roles;
+
+    // Bidirectional mapping to Reservation
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Reservation> reservations;
 }

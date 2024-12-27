@@ -23,7 +23,7 @@ import java.util.Optional;
 
 @Service
 public class AuthenticationService {
-
+    @Autowired
     private UserInfoService userInfoService;
 
     @Autowired

@@ -13,4 +13,8 @@ public class ExceptionConstants {
     public static final String UNAUTHORIZED_OPERATION = "Only Admin can perform this action!";
 
 
+    public static final String ROOM_NOT_AVAILABLE = "No reservations available";
+    public static final String RESERVATION_ALREADY_EXISTS = "Reservation already exists!";
+    public static final String CANNOT_DELETE_ACTIVE_RESERVATION = "Active Reservations can't be Deleted!";
+    public static final String CANNOT_UPDATE_ACTIVE_RESERVATION = "Active Reservations can't be Updated!" ;
 }
